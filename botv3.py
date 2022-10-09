@@ -161,11 +161,17 @@ def cmd_getWeek(message):
 def notif_auto(mensaje):
     global delay_notif_auto
     global flag_daily
+    global fecha_auto_daily
+    #now = datetime.now() 
+    #if now + delay_notif_auto 
     while (True):
-        time.sleep(delay_notif_auto)
-        now = datetime.now()
-        if flag_daily == 0 and now.hour >= 8 and now.hour <= 23:
-            cmd_getToDo(mensaje)
+        if flag_daily == 0: 
+            now = datetime.now()
+            if  now.hour >= 8 and now.hour <= 23:
+                cmd_getToDo(mensaje)
+                time.sleep(delay_notif_auto)
+            else:
+                time.sleep((fecha_auto_daily.hour-now.hour)*3600 + (fecha_auto_daily.minute-now.minute)*60)                         
         else:
             break
     print("Hilo diario muerto.\n")
@@ -178,6 +184,8 @@ def notif_auto_bot(message):
     # Hace que solo mzarzu pueda activar las notificaciones automaticas
     if message.from_user.id == chat_id_mzarzu:
         global flag_daily
+        global fecha_auto_daily 
+        fecha_auto_daily = datetime.fromtimestamp(message.date)
         if flag_daily != 0:
             flag_daily = 0
             hilo_notif_hoy = threading.Thread(
